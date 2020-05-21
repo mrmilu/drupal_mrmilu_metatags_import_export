@@ -1,0 +1,8 @@
+{
+ "name": "mrmilu/mrmilu_metatags_import_export",
+ "description": "Provides an UI to import and export content metatags",
+ "type": "drupal-mrmilu-module",
+ "require": {
+    "phpoffice/phpspreadsheet": "~1"
+  }
+}

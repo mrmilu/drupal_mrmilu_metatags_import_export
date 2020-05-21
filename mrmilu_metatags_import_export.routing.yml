@@ -1,0 +1,9 @@
+mrmilu_metatags_import_export.export:
+  path: '/admin/config/search/metatag/export'
+  defaults:
+    _form: '\Drupal\mrmilu_metatags_import_export\Form\MetatagsExportForm'
+    _title: 'Metatags export'
+  requirements:
+    _permission: 'administer meta tags'
+  options:
+    _admin_route: TRUE
