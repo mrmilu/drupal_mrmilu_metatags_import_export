@@ -3,6 +3,7 @@
 namespace Drupal\mrmilu_metatags_import_export\Serializer;
 
 use Drupal\metatag\MetatagToken;
+use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
 
 
 class ExcelMetatagsSerializer{
@@ -15,15 +16,23 @@ class ExcelMetatagsSerializer{
   protected $tokenService;
 
   /**
+   * The entity type manager service.
+   *
+   * @var \Drupal\mrmilu_metatags_import_export\metatagsImportExportManager
+   */
+  protected $metatagsImportExportManager;
+
+  /**
    * Constructor.
    *
    * @param MetatagToken $token
    */
-  public function __construct(MetatagToken $token) {
+  public function __construct(MetatagToken $token, MetatagsImportExportManager $metatags_import_export_manager) {
     $this->tokenService = $token;
+    $this->metatagsImportExportManager = $metatags_import_export_manager;
   }
 
-  public function export($entity) {
+  public function export($entity, $langcode) {
     // Create basic fields
     $row = [
       'id' => $entity->id(),
@@ -35,10 +44,8 @@ class ExcelMetatagsSerializer{
     // Get metatags values and merge it with basic ones
     $entityMetatags = \Drupal::service('metatag.manager')->tagsFromEntityWithDefaults($entity);
     $tokenReplacements = [$entity->getEntityTypeId() => $entity];
-    // @TODO Get available tags from settings
-    $allowedMetatags = ['title', 'description', 'og_title'];
-    foreach ($allowedMetatags as $key) {
-      $row[$key] = $this->tokenService->replace($entityMetatags[$key], $tokenReplacements);
+    foreach ($this->metatagsImportExportManager->getAllowedTags() as $tag) {
+      $row[$tag] = empty($entityMetatags[$tag]) ? '' : $this->tokenService->replace($entityMetatags[$tag], $tokenReplacements, ['langcode' => $langcode]);
     }
     return $row;
   }

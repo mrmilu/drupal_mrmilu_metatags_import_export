@@ -1,4 +1,6 @@
 services:
   mrmilu_metatags_import_export.excel_metatags_serializer:
     class: Drupal\mrmilu_metatags_import_export\Serializer\ExcelMetatagsSerializer
-    arguments: ['@metatag.token']
+    arguments: ['@metatag.token', '@mrmilu_metatags_import_export.manager', '@language_manager']
+  mrmilu_metatags_import_export.manager:
+    class: Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager
