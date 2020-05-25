@@ -88,31 +88,34 @@ class MetatagsImportExportManager {
     return $rows;
   }
 
-  public function overrideEntitiesMetatags($data) {
+  public function overrideEntitiesMetatags($data, $langcode) {
     foreach ($data as $row) {
       if (!empty($row['id']) && !empty($row['entity_type'])) {
         $entity = $this->entityTypeManager->getStorage($row['entity_type'])->load($row['id']);
-        // H1 is allowed to be changed although it's not a metatag
-        if ($row['entity_type'] == 'node') {
-          $entity->setTitle($row['h1']);
-        }elseif ($row['entity_type'] == 'taxonomy_term') {
-          $entity->setName($row['h1']);
-        }
-        // If alias changes, set automatic alias to FALSE
-        // @TODO: Manage new alias
-        // Set new metatags
-        unset($row['id']);
-        unset($row['entity_type']);
-        unset($row['bundle']);
-        unset($row['url']);
-        unset($row['h1']);
+        if ($entity->hasTranslation($langcode)) {
+          $entity = $entity->getTranslation($langcode);
+          // H1 is allowed to be changed although it's not a metatag
+          if ($row['entity_type'] == 'node') {
+            $entity->setTitle($row['h1']);
+          }elseif ($row['entity_type'] == 'taxonomy_term') {
+            $entity->setName($row['h1']);
+          }
+          // If alias changes, set automatic alias to FALSE
+          // @TODO: Manage new alias
+          // Set new metatags
+          unset($row['id']);
+          unset($row['entity_type']);
+          unset($row['bundle']);
+          unset($row['url']);
+          unset($row['h1']);
 
-        // Loop over entity fields to find the metatags one
-        $definitions = $entity->getFieldDefinitions();
-        foreach ($definitions as $fieldName => $definition) {
-          if (!empty($definition->getType()) && $definition->getType() == 'metatag') {
-            $entity->set($fieldName, serialize($row));
-            $entity->save();
+          // Loop over entity fields to find the metatags one
+          $definitions = $entity->getFieldDefinitions();
+          foreach ($definitions as $fieldName => $definition) {
+            if (!empty($definition->getType()) && $definition->getType() == 'metatag') {
+              $entity->set($fieldName, serialize($row));
+              $entity->save();
+            }
           }
         }
       }

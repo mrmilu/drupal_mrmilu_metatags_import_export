@@ -5,6 +5,7 @@ namespace Drupal\mrmilu_metatags_import_export\Form;
 use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -82,6 +83,13 @@ class MetatagsImportForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
+    $form['langcode'] = [
+      '#type' => 'language_select',
+      '#title' => $this->t('Language'),
+      '#languages' => LanguageInterface::STATE_CONFIGURABLE,
+      '#default_value' => 'es'
+    ];
+
     $form['file'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('Excel file'),
@@ -106,7 +114,7 @@ class MetatagsImportForm extends FormBase {
       $fileId = $form_state->getValue('file')[0];
       $file = $this->entityTypeManager->getStorage('file')->load($fileId);
       $dataArray = $this->metatagsImportExportManager->excelToArray($file);
-      $this->metatagsImportExportManager->overrideEntitiesMetatags($dataArray);
+      $this->metatagsImportExportManager->overrideEntitiesMetatags($dataArray, $form_state->getValue('langcode'));
       $this->messenger->addMessage('Metatags imported successfully');
     }
     catch (\Exception $e) {
