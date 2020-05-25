@@ -10,9 +10,6 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
 use Drupal\mrmilu_metatags_import_export\Serializer\ExcelMetatagsSerializer;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
@@ -165,23 +162,7 @@ class MetatagsExportForm extends FormBase {
           }
         }
       }
-      $spread = new Spreadsheet();
-      $spread->getProperties()
-        ->setCreator("Mr. Milú")
-        ->setTitle(\Drupal::config('system.site')->get('name') . ' metatags');
-      $sheet = $spread->getActiveSheet();
-      $sheet->freezePane('B4');
-      $sheet->getStyle('A1:Z1')->getFont()->setBold(true);
-      $sheet->getStyle('A1:Z1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('41bdf2');
-
-      // Fill data array
-      $sheet->fromArray($data);
-      // Download file
-      header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      header('Content-Disposition: attachment;filename="metatags.xlsx"');
-      header('Cache-Control: max-age=0');
-      $writer = IOFactory::createWriter($spread, 'Xlsx');
-      $writer->save('php://output');
+      $this->metatagsImportExportManager->generateExcel($data);
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());

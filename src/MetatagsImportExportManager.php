@@ -7,6 +7,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\FileInterface;
 use Drupal\metatag\MetatagManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class MetatagsImportExportManager {
 
@@ -121,5 +123,27 @@ class MetatagsImportExportManager {
       }
       $context['results'][] = $row['entity_type'] . ':' . $row['id'];
     }
+  }
+
+  public function generateExcel($data) {
+    $spread = new Spreadsheet();
+    $spread->getProperties()
+      ->setCreator("Mr. Milú")
+      ->setTitle(\Drupal::config('system.site')->get('name') . ' metatags');
+    $sheet = $spread->getActiveSheet();
+    // Fill data array
+    $sheet->fromArray($data);
+    // Apply some styles
+    $sheet->freezePane('B4');
+    $highestColumn = $sheet->getHighestColumn();
+    $sheet->getStyle('A1:' . $highestColumn . '1')->getFont()->setBold(true);
+    $sheet->getStyle('A1:' . $highestColumn . '1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('41bdf2');
+
+    // Download file
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="metatags.xlsx"');
+    header('Cache-Control: max-age=0');
+    $writer = IOFactory::createWriter($spread, 'Xlsx');
+    $writer->save('php://output');
   }
 }
