@@ -2,7 +2,6 @@
 
 namespace Drupal\mrmilu_metatags_import_export\Form;
 
-use Drupal\Core\Entity\EntityTypeBundleInfo;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Language\LanguageInterface;
@@ -25,13 +24,6 @@ class MetatagsImportForm extends FormBase {
   protected $messenger;
 
   /**
-   * The entity_type.bundle.info service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
-   */
-  protected $entityTypeBundleInfo;
-
-  /**
    * The entity type manager service.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -49,13 +41,11 @@ class MetatagsImportForm extends FormBase {
    * MetatagsExportForm constructor.
    *
    * @param MessengerInterface $messenger
-   * @param EntityTypeBundleInfo $entity_bundle_info
    * @param EntityTypeManagerInterface $entity_type_manager
    * @param MetatagsImportExportManager $metatags_import_export_manager
    */
-  public function __construct(MessengerInterface $messenger, EntityTypeBundleInfo $entity_bundle_info, EntityTypeManagerInterface $entity_type_manager, MetatagsImportExportManager $metatags_import_export_manager) {
+  public function __construct(MessengerInterface $messenger, EntityTypeManagerInterface $entity_type_manager, MetatagsImportExportManager $metatags_import_export_manager) {
     $this->messenger = $messenger;
-    $this->entityTypeBundleInfo = $entity_bundle_info;
     $this->entityTypeManager = $entity_type_manager;
     $this->metatagsImportExportManager = $metatags_import_export_manager;
   }
@@ -111,14 +101,33 @@ class MetatagsImportForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
+      $batch = array(
+        'title' => t('Updating entities metatags...'),
+        'operations' => [],
+        'init_message'     => t('Starting'),
+        'progress_message' => t('Processed @current out of @total.'),
+        'error_message'    => t('An error occurred during importing'),
+        'finished' => '\Drupal\mrmilu_metatags_import_export\Form\MetatagsImportForm::importFinished',
+      );
       $fileId = $form_state->getValue('file')[0];
       $file = $this->entityTypeManager->getStorage('file')->load($fileId);
       $dataArray = $this->metatagsImportExportManager->excelToArray($file);
-      $this->metatagsImportExportManager->overrideEntitiesMetatags($dataArray, $form_state->getValue('langcode'));
-      $this->messenger->addMessage('Metatags imported successfully');
+      foreach ($dataArray as $row) {
+        $batch['operations'][] = ['\Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager::overrideEntityMetatags', [$row, $form_state->getValue('langcode')]];
+      }
+      batch_set($batch);
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
+    }
+  }
+
+  public static function importFinished($success, $results, $operations) {
+    if ($success) {
+      \Drupal::messenger()->addMessage('Metatags imported successfully');
+    }
+    else {
+      \Drupal::messenger()->addError('An error ocurred');
     }
   }
 }
