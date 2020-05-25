@@ -101,14 +101,16 @@ class MetatagsImportExportManager {
             $entity->setName($row['h1']);
           }
           // If alias changes, set automatic alias to FALSE
-          // @TODO: Manage new alias
-          // Set new metatags
+          if ($entity->toUrl()->toString() !== $row['url']) {
+            $entity->path->pathauto = 0;
+            $entity->path->alias = $row['url'];
+          }
+          // Delete no-metatag columns
           unset($row['id']);
           unset($row['entity_type']);
           unset($row['bundle']);
           unset($row['url']);
           unset($row['h1']);
-
           // Loop over entity fields to find the metatags one
           $definitions = $entity->getFieldDefinitions();
           foreach ($definitions as $fieldName => $definition) {
