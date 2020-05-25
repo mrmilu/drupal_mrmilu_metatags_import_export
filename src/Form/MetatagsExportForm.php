@@ -148,7 +148,19 @@ class MetatagsExportForm extends FormBase {
           foreach ($nodes as $node) {
             if ($node->hasTranslation($form_state->getValue('langcode'))) {
               $node = $node->getTranslation($form_state->getValue('langcode'));
-              $data[] = $this->excelMetatagsSerializer->export($node, $form_state->getValue('langcode'));
+              $data[] = $this->excelMetatagsSerializer->toExcelRow($node, $form_state->getValue('langcode'));
+            }
+          }
+        }
+      }
+      // Terms
+      foreach ($form_state->getValue('taxonomy_term') as $bundle) {
+        if (!empty($bundle)) {
+          $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties(['vid' => $bundle]);
+          foreach ($terms as $term) {
+            if ($term->hasTranslation($form_state->getValue('langcode'))) {
+              $term = $term->getTranslation($form_state->getValue('langcode'));
+              $data[] = $this->excelMetatagsSerializer->toExcelRow($term, $form_state->getValue('langcode'));
             }
           }
         }

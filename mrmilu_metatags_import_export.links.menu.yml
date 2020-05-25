@@ -1,0 +1,15 @@
+mrmilu_metatags_import_export.settings:
+  title: 'Export settings'
+  parent: entity.metatag_defaults.collection
+  route_name: mrmilu_metatags_import_export.settings
+  weight: 1
+mrmilu_metatags_import_export.export:
+  title: 'Export'
+  parent: entity.metatag_defaults.collection
+  route_name: mrmilu_metatags_import_export.export
+  weight: 2
+mrmilu_metatags_import_export.import:
+  title: 'Import'
+  parent: entity.metatag_defaults.collection
+  route_name: mrmilu_metatags_import_export.import
+  weight: 3

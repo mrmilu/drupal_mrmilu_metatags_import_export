@@ -4,3 +4,4 @@ services:
     arguments: ['@metatag.token', '@mrmilu_metatags_import_export.manager', '@language_manager']
   mrmilu_metatags_import_export.manager:
     class: Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager
+    arguments: ['@entity_type.manager', '@metatag.manager']

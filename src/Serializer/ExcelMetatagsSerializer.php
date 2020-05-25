@@ -2,8 +2,10 @@
 
 namespace Drupal\mrmilu_metatags_import_export\Serializer;
 
+use Drupal\file\FileInterface;
 use Drupal\metatag\MetatagToken;
 use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 
 class ExcelMetatagsSerializer{
@@ -32,7 +34,7 @@ class ExcelMetatagsSerializer{
     $this->metatagsImportExportManager = $metatags_import_export_manager;
   }
 
-  public function export($entity, $langcode) {
+  public function toExcelRow($entity, $langcode) {
     // Create basic fields
     $row = [
       'id' => $entity->id(),
