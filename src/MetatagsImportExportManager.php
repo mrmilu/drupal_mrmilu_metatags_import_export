@@ -134,7 +134,7 @@ class MetatagsImportExportManager {
     // Fill data array
     $sheet->fromArray($data);
     // Apply some styles
-    $sheet->freezePane('B4');
+    $sheet->freezePane('B2');
     $highestColumn = $sheet->getHighestColumn();
     $sheet->getStyle('A1:' . $highestColumn . '1')->getFont()->setBold(true);
     $sheet->getStyle('A1:' . $highestColumn . '1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('41bdf2');
