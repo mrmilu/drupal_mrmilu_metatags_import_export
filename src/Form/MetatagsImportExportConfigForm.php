@@ -51,9 +51,6 @@ class MetatagsImportExportConfigForm extends FormBase {
     $config = \Drupal::state()->get('mrmilu_metatags_import_export_allowed_tags');
     $groupsAndTags = $this->metatagManager->sortedGroupsWithTags();
     foreach ($groupsAndTags as $groupId => $group) {
-      if ($groupId == 'advanced') {
-        continue;
-      }
       $form[$groupId] = [
         '#type' => 'details',
         '#title' => $group['label'],
