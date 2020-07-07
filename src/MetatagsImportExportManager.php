@@ -3,38 +3,12 @@
 namespace Drupal\mrmilu_metatags_import_export;
 
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\FileInterface;
-use Drupal\metatag\MetatagManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class MetatagsImportExportManager {
-
-  /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The metatag.manager service.
-   *
-   * @var \Drupal\metatag\MetatagManagerInterface
-   */
-  protected $metatagManager;
-
-  /**
-   * MetatagsImportExportManager constructor.
-   *
-   * @param EntityTypeManagerInterface $entity_type_manager
-   */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, MetatagManagerInterface $metatag_manager) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->metatagManager = $metatag_manager;
-  }
 
   public function getAllowedTags() {
     $config = \Drupal::state()->get('mrmilu_metatags_import_export_allowed_tags');
@@ -90,9 +64,9 @@ class MetatagsImportExportManager {
     return $rows;
   }
 
-  public function overrideEntityMetatags($row, $langcode, &$context) {
+  public static function overrideEntityMetatags($row, $langcode, &$context) {
     if (!empty($row['id']) && !empty($row['entity_type'])) {
-      $entity = \Drupal::entityTypeManager()->getStorage($row['entity_type'])->load($row['id']);
+      $entity = \Drupal::entityTypeManager()->getStorage($row['entity_type'])->load(intval($row['id']));
       if ($entity->hasTranslation($langcode)) {
         $entity = $entity->getTranslation($langcode);
         // H1 is allowed to be changed although it's not a metatag

@@ -56,7 +56,6 @@ class MetatagsImportForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('messenger'),
-      $container->get('entity_type.bundle.info'),
       $container->get('entity_type.manager'),
       $container->get('mrmilu_metatags_import_export.manager')
     );
