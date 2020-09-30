@@ -95,7 +95,6 @@ class MetatagsImportExportManager {
           }
         }
       }
-      $context['results'][] = $row['entity_type'] . ':' . $row['id'];
     }
   }
 
