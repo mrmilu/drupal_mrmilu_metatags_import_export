@@ -1,6 +1,6 @@
 name: Mr.Milu Metatags Import Export
 description: Provides some functionality to help front developers
 package: Mr. Milú
-version: 1.0.4
+version: 1.0.5
 type: module
 core: 8.x

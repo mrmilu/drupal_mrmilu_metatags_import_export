@@ -8,7 +8,6 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -71,7 +70,7 @@ class MetatagsImportForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form['langcode'] = [
       '#type' => 'language_select',
       '#title' => $this->t('Language'),

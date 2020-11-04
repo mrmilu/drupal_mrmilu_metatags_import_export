@@ -11,7 +11,6 @@ use Drupal\Core\Url;
 use Drupal\mrmilu_metatags_import_export\MetatagsImportExportManager;
 use Drupal\mrmilu_metatags_import_export\Serializer\ExcelMetatagsSerializer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -94,7 +93,7 @@ class MetatagsExportForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $allowed_tags = $this->metatagsImportExportManager->getAllowedTags();
     if (empty($allowed_tags)) {
       $settings_url = Url::fromRoute('mrmilu_metatags_import_export.settings')->toString();
